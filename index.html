@@ -1,0 +1,141 @@
+import React, { useState } from 'react';
+
+export default function ECommerce() {
+  const [page, setPage] = useState('home');
+  const [show, setShow] = useState(false);
+  const [form, setForm] = useState({ name: '', email: '', pass: '', confirm: '' });
+  const [err, setErr] = useState({});
+  const [mode, setMode] = useState('login');
+
+  const validate = () => {
+    const e = {};
+    if (mode === 'register' && !form.name) e.name = 'Name required';
+    if (!form.email || !/\S+@\S+\.\S+/.test(form.email)) e.email = 'Valid email required';
+    if (!form.pass || form.pass.length < 6) e.pass = 'Password 6+ chars';
+    if (mode === 'register' && form.pass !== form.confirm) e.confirm = 'Passwords must match';
+    setErr(e);
+    return !Object.keys(e).length;
+  };
+
+  const submit = () => validate() && (setShow(false), setForm({ name: '', email: '', pass: '', confirm: '' }));
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <nav className="bg-blue-600 text-white p-4 flex justify-between">
+        <h1 className="text-2xl font-bold">ShopHub</h1>
+        <div className="flex gap-4">
+          {['home', 'products', 'contact', 'about'].map(p => (
+            <button key={p} onClick={() => setPage(p)} className="hover:underline capitalize">{p}</button>
+          ))}
+          <button onClick={() => setShow(!show)} className="bg-white text-blue-600 px-3 rounded">Login</button>
+        </div>
+      </nav>
+
+      {show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded w-80">
+            <h2 className="text-xl font-bold mb-4">{mode === 'login' ? 'Login' : 'Register'}</h2>
+            {mode === 'register' && (
+              <div className="mb-3">
+                <input type="text" placeholder="Name" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full p-2 border rounded" />
+                {err.name && <p className="text-red-500 text-xs">{err.name}</p>}
+              </div>
+            )}
+            <div className="mb-3">
+              <input type="email" placeholder="Email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full p-2 border rounded" />
+              {err.email && <p className="text-red-500 text-xs">{err.email}</p>}
+            </div>
+            <div className="mb-3">
+              <input type="password" placeholder="Password" value={form.pass} onChange={e => setForm({...form, pass: e.target.value})} className="w-full p-2 border rounded" />
+              {err.pass && <p className="text-red-500 text-xs">{err.pass}</p>}
+            </div>
+            {mode === 'register' && (
+              <div className="mb-3">
+                <input type="password" placeholder="Confirm" value={form.confirm} onChange={e => setForm({...form, confirm: e.target.value})} className="w-full p-2 border rounded" />
+                {err.confirm && <p className="text-red-500 text-xs">{err.confirm}</p>}
+              </div>
+            )}
+            <button onClick={submit} className="w-full bg-blue-600 text-white p-2 rounded mb-2">Submit</button>
+            <button onClick={() => setMode(mode === 'login' ? 'register' : 'login')} className="text-blue-600 text-sm">{mode === 'login' ? 'Register' : 'Login'}</button>
+            <button onClick={() => setShow(false)} className="block mt-2 text-gray-600">Close</button>
+          </div>
+        </div>
+      )}
+
+      <div className="container mx-auto p-6">
+        {page === 'home' && (
+          <div>
+            <div className="bg-blue-500 text-white p-8 rounded mb-6">
+              <h1 className="text-3xl font-bold">Welcome to ShopHub</h1>
+            </div>
+            
+            <div className="bg-white p-6 rounded shadow mb-6">
+              <h2 className="text-xl font-bold mb-4">📦 Orders</h2>
+              <div className="border-b py-2 flex justify-between"><span>Laptop - Delivered</span><span>₹45,000</span></div>
+              <div className="border-b py-2 flex justify-between"><span>Headphones - Shipped</span><span>₹2,500</span></div>
+            </div>
+
+            <div className="bg-white p-6 rounded shadow mb-6">
+              <h2 className="text-xl font-bold mb-4">❤️ Wishlist</h2>
+              <div className="py-2">Camera - ₹35,000</div>
+              <div className="py-2">Watch - ₹3,500</div>
+            </div>
+
+            <div className="bg-white p-6 rounded shadow mb-6">
+              <h2 className="text-xl font-bold mb-4">⭐ Reviews</h2>
+              <div className="border-b py-2"><b>Laptop</b> - ⭐⭐⭐⭐⭐ Excellent!</div>
+              <div className="py-2"><b>Headphones</b> - ⭐⭐⭐⭐ Good quality</div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-white p-6 rounded shadow">
+                <h2 className="text-xl font-bold mb-4">📞 Customer Care</h2>
+                <p>Phone: 1800-XXX-XXXX</p>
+                <p>Email: support@shophub.com</p>
+                <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Chat Now</button>
+              </div>
+              <div className="bg-white p-6 rounded shadow">
+                <h2 className="text-xl font-bold mb-4">🚨 Report Issue</h2>
+                <select className="w-full p-2 border rounded mb-3">
+                  <option>Product Issue</option>
+                  <option>Delivery Problem</option>
+                </select>
+                <button className="bg-red-600 text-white px-4 py-2 rounded">Submit</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {page === 'products' && (
+          <div>
+            <h1 className="text-2xl font-bold mb-4">Products</h1>
+            <div className="grid md:grid-cols-3 gap-4">
+              {['💻 Laptop ₹45k', '🎧 Headphones ₹2.5k', '📱 Phone ₹25k'].map((p, i) => (
+                <div key={i} className="bg-white p-6 rounded shadow text-center">
+                  <p className="text-4xl mb-2">{p.split(' ')[0]}</p>
+                  <p className="font-bold">{p.slice(3)}</p>
+                  <button className="mt-4 bg-blue-600 text-white px-4 py-2 rounded">Add to Cart</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {page === 'contact' && (
+          <div className="bg-white p-8 rounded shadow max-w-xl mx-auto">
+            <h1 className="text-2xl font-bold mb-4">Contact Us</h1>
+            <p>📍 123 Shopping St, Mumbai</p>
+            <p>📞 +91 1800-XXX-XXXX</p>
+          </div>
+        )}
+
+        {page === 'about' && (
+          <div className="bg-white p-8 rounded shadow max-w-xl mx-auto">
+            <h1 className="text-2xl font-bold mb-4">About ShopHub</h1>
+            <p>Your trusted online shopping destination since 2020.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
